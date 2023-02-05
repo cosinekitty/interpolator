@@ -161,7 +161,7 @@ $$
 $$
 
 Is represented by the list `[-11, 7, -4, 17]`. Note that the coefficients go
-from lowest order ($x^0$) to the highest order ($x^3$).
+from lowest order $x^0$ to the highest order $x^3$.
 
 The `Polynomial` instance overloads the parentheses operator `()` to allow
 treating it syntactically like a function of $x$ in your C++ code.
