@@ -92,14 +92,14 @@ $$
 A little sanity check in Python confirms we didn't make any mistakes:
 
 ```python
->>> def g(x):
+>>> def f(x):
 ...     return (17/2)*x*x - (69/2)*x + 33
 ... 
->>> g(1)
+>>> f(1)
 7.0
->>> g(2)
+>>> f(2)
 -2.0
->>> g(3)
+>>> f(3)
 6.0
 ```
 
