@@ -33,12 +33,16 @@ static bool LinearTestDouble()
 {
     CosineKitty::Interpolator<double, double> interp;
 
-    interp.insert(-5.0, 7.0);
-    interp.insert( 0.0, 4.0);
-    interp.insert(+3.0, 9.0);
+    if (!interp.insert(-5.0, 7.0) ||
+        !interp.insert( 0.0, 4.0) ||
+        !interp.insert(+3.0, 9.0))
+    {
+        printf("LinearTestDouble: FAIL: did not insert all points.\n");
+        return false;
+    }
 
     // Verify that the supplied points evaluate exactly (within tolerance).
-    const double tolerance = 1.0e-12;
+    const double tolerance = 1.0e-14;
 
     return (
         Check("LinearTestDouble", interp, -5.0, 7.0, tolerance) &&
