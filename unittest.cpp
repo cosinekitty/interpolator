@@ -12,12 +12,11 @@ static bool Pass(const char *caller)
 template <typename domain_t, typename range_t>
 bool Check(
     const char *caller,
-    CosineKitty::Interpolator<domain_t, range_t>& interp,
     domain_t x,
     range_t yCorrect,
+    range_t yCalc,
     double tolerance)
 {
-    range_t yCalc = interp.calc(x);
     double diff = std::abs(yCalc - yCorrect);
     printf("%s(%lf): diff = %le\n", caller, static_cast<double>(x), diff);
     if (diff > tolerance)
@@ -26,6 +25,30 @@ bool Check(
         return false;
     }
     return true;
+}
+
+
+template <typename domain_t, typename range_t>
+bool CheckInterpolator(
+    const char *caller,
+    CosineKitty::Interpolator<domain_t, range_t>& interp,
+    domain_t x,
+    range_t yCorrect,
+    double tolerance)
+{
+    return Check(caller, x, yCorrect, interp.calc(x), tolerance);
+}
+
+
+template <typename domain_t>
+bool CheckPolynomial(
+    const char *caller,
+    CosineKitty::Polynomial<domain_t>& poly,
+    domain_t x,
+    domain_t yCorrect,
+    double tolerance)
+{
+    return Check(caller, x, yCorrect, poly(x), tolerance);
 }
 
 
@@ -39,6 +62,12 @@ static bool PolynomialMult()
     using poly_t = Polynomial<double>;
 
     poly_t prod {-1, 1};        // -1 + x
+
+    const double tolerance = 1.0e-14;
+
+    // Verify we can evaluate the polynomial for different values of x.
+    if (!CheckPolynomial("PolynomialMult", prod, 3.5, 2.5, tolerance)) return false;
+    if (!CheckPolynomial("PolynomialMult", prod, 7.2, 6.2, tolerance)) return false;
 
     return Pass("PolynomialMult");
 }
@@ -60,9 +89,9 @@ static bool LinearTestDouble()
     const double tolerance = 1.0e-14;
 
     return (
-        Check("LinearTestDouble", interp, -5.0, 7.0, tolerance) &&
-        Check("LinearTestDouble", interp,  0.0, 4.0, tolerance) &&
-        Check("LinearTestDouble", interp, +3.0, 9.0, tolerance) &&
+        CheckInterpolator("LinearTestDouble", interp, -5.0, 7.0, tolerance) &&
+        CheckInterpolator("LinearTestDouble", interp,  0.0, 4.0, tolerance) &&
+        CheckInterpolator("LinearTestDouble", interp, +3.0, 9.0, tolerance) &&
         Pass("LinearTestDouble")
     );
 }

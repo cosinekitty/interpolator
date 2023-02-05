@@ -15,6 +15,18 @@ namespace CosineKitty
         Polynomial(std::initializer_list<domain_t> coefficients)
             : coeff(coefficients)
             {}
+
+        domain_t operator() (domain_t x) const
+        {
+            domain_t sum = 0;
+            domain_t xpow = 1;
+            for (domain_t c : coeff)
+            {
+                sum += c * xpow;
+                xpow *= x;
+            }
+            return sum;
+        }
     };
 
     template<typename domain_t, typename range_t>
