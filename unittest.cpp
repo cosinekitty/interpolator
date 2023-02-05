@@ -29,18 +29,6 @@ bool Check(
 }
 
 
-template <typename domain_t, typename range_t>
-bool CheckInterpolator(
-    const char *caller,
-    const CosineKitty::Interpolator<domain_t, range_t>& interp,
-    domain_t x,
-    range_t yCorrect,
-    double tolerance)
-{
-    return Check(caller, x, yCorrect, interp.calc(x), tolerance);
-}
-
-
 template <typename domain_t>
 bool CheckPolynomial(
     const char *caller,
@@ -150,7 +138,9 @@ static bool PolynomialAdd()
 
 static bool LinearTestDouble()
 {
-    CosineKitty::Interpolator<double, double> interp;
+    using namespace CosineKitty;
+
+    Interpolator<double, double> interp;
 
     if (!interp.insert(-5.0, 7.0) ||
         !interp.insert( 0.0, 4.0) ||
@@ -160,13 +150,17 @@ static bool LinearTestDouble()
         return false;
     }
 
+    Polynomial<double> poly = interp.polynomial();
+    std::string ptext = to_string(poly.coefficients());
+    printf("LinearTestDouble: poly = %s\n", ptext.c_str());
+
     // Verify that the supplied points evaluate exactly (within tolerance).
     const double tolerance = 1.0e-14;
 
     return (
-        CheckInterpolator("LinearTestDouble", interp, -5.0, 7.0, tolerance) &&
-        CheckInterpolator("LinearTestDouble", interp,  0.0, 4.0, tolerance) &&
-        CheckInterpolator("LinearTestDouble", interp, +3.0, 9.0, tolerance) &&
+        CheckPolynomial("LinearTestDouble", poly, -5.0, 7.0, tolerance) &&
+        CheckPolynomial("LinearTestDouble", poly,  0.0, 4.0, tolerance) &&
+        CheckPolynomial("LinearTestDouble", poly, +3.0, 9.0, tolerance) &&
         Pass("LinearTestDouble")
     );
 }
