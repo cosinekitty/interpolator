@@ -52,9 +52,31 @@ static bool LinearTestDouble()
     );
 }
 
+
+static bool FailDuplicate()
+{
+    CosineKitty::Interpolator<double, double> interp;
+
+    if (!interp.insert(3.0, 4.0))
+    {
+        printf("FailDuplicate: should have inserted first point.\n");
+        return false;
+    }
+
+    if (interp.insert(3.0, 5.0))
+    {
+        printf("FailDuplicate: should NOT have inserted second point.\n");
+        return false;
+    }
+
+    return Pass("FailDuplicate");
+}
+
+
 int main()
 {
     return (
-        LinearTestDouble()
+        LinearTestDouble() &&
+        FailDuplicate()
     ) ? 0 : 1;
 }
