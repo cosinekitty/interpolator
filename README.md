@@ -134,6 +134,6 @@ of $(x_j-x_k)$ terms, also omitting the $k=j$ case.
 Written more compactly, the formula is
 
 $$
-f(x) = \sum_{j=0}^{n-1} y_j \prod_{\substack{k=0 \\ k \ne j}}^{n-1} \frac{x-x_k}{x_j-x_k}
+f(x) = \sum_{j=0}^{n-1} \left( y_j \prod_{\substack{k=0 \\ k \ne j}}^{n-1} \frac{x-x_k}{x_j-x_k} \right)
 $$
 
