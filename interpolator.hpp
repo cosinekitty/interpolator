@@ -44,22 +44,14 @@ namespace CosineKitty
         {
             using namespace std;
 
-            // Special case: an empty polynomial [] represents zero.
-            // If either polynomial is zero, return zero.
-            if (coeff.size() == 0 || other.coeff.size() == 0)
-                return Polynomial{};
+            const size_t a = coeff.size();
+            const size_t b = other.coeff.size();
 
             vector<domain_t> prod;
-            // The length of each list of coefficients is one greater
-            // than the highest power of x in the associated polynomial.
-            // The highest power of x in the product is then
-            // (L1-1) + (L2-1) = L1 + L2 - 2.
-            // Then we need L1+L2-1 coefficients for the product.
-            prod.resize(coeff.size() + other.coeff.size() - 1);
+            prod.resize(a + b - 1);
 
-            // Calculate the product's coefficients.
-            for (size_t i = 0; i < coeff.size(); ++i)
-                for (size_t j = 0; j < other.coeff.size(); ++j)
+            for (size_t i = 0; i < a; ++i)
+                for (size_t j = 0; j < b; ++j)
                     prod[i+j] += coeff[i] * other.coeff[j];
 
             return Polynomial{prod};
