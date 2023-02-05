@@ -169,5 +169,6 @@ treating it syntactically like a function of $x$ in your C++ code.
 # Sample code
 
 Here is a [sample C++ program](demo.cpp) of a cubic best-fit through four points.
-Once found, the polynomial is evaluated at those and other points.
+Once found, the program prints the polynomial and evaluates it at a few points.
 
+Here is [the output from the demo program](correct/demo.txt).
