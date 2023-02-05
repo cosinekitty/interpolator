@@ -103,3 +103,11 @@ A little sanity check in Python confirms we didn't make any mistakes:
 6.0
 ```
 
+# General Solution
+
+The same approach generalizes to any number of points $n$,
+resulting in a polynomial of order $(n-1)$. That's right,
+with very little work, you can write down a cubic function
+that passes through 4 points. Or a quintic function that
+passes through 6 points!
+
