@@ -123,9 +123,25 @@ static bool PolynomialMult()
     // Find the product (-1 + x)(-2 + x).
     // It should be (2 - 3x + x^2) = [2, -3, 1].
     prod *= poly_t{-2, 1};
-    if (!CompareCoeffs("PolynomialMult", prod.getCoefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs("PolynomialMult", prod.coefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
 
     return Pass("PolynomialMult");
+}
+
+
+static bool PolynomialAdd()
+{
+    using namespace CosineKitty;
+    using poly_t = Polynomial<double>;
+    const double tolerance = 1.0e-14;
+
+    poly_t a {3, -4, 5};        // 3 - 4x + 5x^2
+    poly_t b {2, 7, 8, 1};      // 2 + 7x + 8x^2 + x^3
+    poly_t c = a + b;
+
+    if (!CompareCoeffs("PolynomialMult", c.coefficients(), {5.0, 3.0, 13.0, 1.0}, tolerance)) return false;
+
+    return Pass("PolynomialAdd");
 }
 
 
@@ -177,6 +193,7 @@ int main()
 {
     return (
         PolynomialMult() &&
+        PolynomialAdd() &&
         LinearTestDouble() &&
         FailDuplicate()
     ) ? 0 : 1;

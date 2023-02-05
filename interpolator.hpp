@@ -35,7 +35,7 @@ namespace CosineKitty
             return sum;
         }
 
-        const std::vector<domain_t>& getCoefficients() const
+        const std::vector<domain_t>& coefficients() const
         {
             return coeff;
         }
@@ -61,6 +61,24 @@ namespace CosineKitty
         {
             *this = *this * other;
             return *this;
+        }
+
+        Polynomial operator+ (const Polynomial& other) const
+        {
+            using namespace std;
+            const size_t a = coeff.size();
+            const size_t b = other.coeff.size();
+            const size_t n = max(a, b);
+            vector<domain_t> sum;
+            sum.resize(n);
+            for (size_t i = 0; i < n; ++i)
+            {
+                if (i < a)
+                    sum[i] += coeff[i];
+                if (i < b)
+                    sum[i] += other.coeff[i];
+            }
+            return Polynomial{sum};
         }
     };
 
