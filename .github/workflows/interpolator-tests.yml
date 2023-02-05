@@ -1,0 +1,9 @@
+name: Interpolator Tests
+on: [push]
+jobs:
+  InterpolatorTest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Interpolator unit tests
+      run: ./run && ./verify_clean
