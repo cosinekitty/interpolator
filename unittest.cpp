@@ -29,6 +29,21 @@ bool Check(
 }
 
 
+static bool PolynomialMult()
+{
+    using namespace CosineKitty;
+
+    // Confirm that we can represent multiplication of
+    // binomials of the form (x - x_j) into a general polynomial.
+
+    using poly_t = Polynomial<double>;
+
+    poly_t prod {-1, 1};        // -1 + x
+
+    return Pass("PolynomialMult");
+}
+
+
 static bool LinearTestDouble()
 {
     CosineKitty::Interpolator<double, double> interp;
@@ -76,6 +91,7 @@ static bool FailDuplicate()
 int main()
 {
     return (
+        PolynomialMult() &&
         LinearTestDouble() &&
         FailDuplicate()
     ) ? 0 : 1;

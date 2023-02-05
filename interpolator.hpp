@@ -5,12 +5,25 @@
 
 namespace CosineKitty
 {
+    template<typename domain_t>
+    class Polynomial
+    {
+    private:
+        std::vector<domain_t> coeff;
+
+    public:
+        Polynomial(std::initializer_list<domain_t> coefficients)
+            : coeff(coefficients)
+            {}
+    };
+
     template<typename domain_t, typename range_t>
     struct DataPoint
     {
         domain_t x;
         range_t y;
     };
+
 
     template<typename domain_t, typename range_t>
     class Interpolator
@@ -33,7 +46,8 @@ namespace CosineKitty
         {
             // The x value must never appear more than once,
             // otherwise there can be inconsistent y values for the same x.
-            // Even if the y values are the same, a duplicate would cause division by zero later.
+            // Even if the y values are the same, a duplicate would cause
+            // division by zero later.
             for (const Coefficient& c : coeffs)
                 if (c.point.x == x)
                     return false;
