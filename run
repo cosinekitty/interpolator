@@ -1,5 +1,16 @@
 #!/bin/bash
+rm -f output/*.txt unittest demo
+
 g++ -o unittest unittest.cpp || exit 1
 ./unittest || exit 1
+
+g++ -o demo demo.cpp || exit 1
+./demo > output/demo.txt || exit 1
+if ! diff {correct,output}/demo.txt; then
+    echo "FAIL: Incorrect output from demo program."
+    exit 1
+fi
+echo "Demo program output is correct."
+
 echo "ALL TESTS PASSED."
 exit 0

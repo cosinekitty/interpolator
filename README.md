@@ -103,7 +103,7 @@ A little sanity check in Python confirms we didn't make any mistakes:
 6.0
 ```
 
-# General Solution
+# General solution
 
 The same approach generalizes to any number of points $n$,
 resulting in a polynomial of order $(n-1)$.
@@ -136,4 +136,38 @@ Written more compactly, the formula is
 $$
 f(x) = \sum_{j=0}^{n-1} \left( y_j \prod_{\substack{k=0 \\ k \ne j}}^{n-1} \frac{x-x_k}{x_j-x_k} \right)
 $$
+
+# Algebra optimization
+
+The above formula is compact and easy to understand, but it's not the most
+efficient way to evaluate $f(x)$ repeatedly. It's much better to expand the products,
+collect terms, and rework as a polynomial in the following form:
+
+$$
+f(x) = \sum_{j=0}^{n-1} K_j x^j
+$$
+
+The C++ code in this project does exactly that. It consists of a class template
+called `Interpolator`. After creating an instance of `Interpolator`, you can call
+its `insert` method to insert as many points $(x_j, y_j)$ as you want.
+
+Then call its `polynomial` method to return an object of type `Polynomial`.
+The `Polynomial` class represents a polynomial in terms of a single independent
+variable $x$. It holds the polynomial's numeric coefficients in ascending order
+of the power of $x$. For example, the polynomial
+
+$$
+17 x^3 - 4 x^2 + 7 x - 11
+$$
+
+Is represented by the list `[-11, 7, -4, 17]`. Note that the coefficients go
+from lowest order ($x^0$) to the highest order ($x^3$).
+
+The `Polynomial` instance overloads the parentheses operator `()` to allow
+treating it syntactically like a function of $x$ in your C++ code.
+
+# Sample code
+
+Here is a [sample C++ program](demo.cpp) of a cubic best-fit through four points.
+Once found, the polynomial is evaluated at those and other points.
 
