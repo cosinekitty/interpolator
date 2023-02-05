@@ -17,8 +17,7 @@ void Print(const poly_t& poly)
                 printf(" - ");
             else
                 printf(" + ");
-            c = std::abs(c);
-            printf("%0.6lf*x", c);
+            printf("%0.6lf*x", std::abs(c));
             if (k > 1)
                 printf("^%d", k);
         }
