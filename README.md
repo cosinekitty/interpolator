@@ -1,5 +1,6 @@
 # Interpolator
-This is a polynomial interpolator implemented as a single-header C++ class template.
+Here is a polynomial interpolator implemented as a C++ header file:
+[interpolator.hpp](interpolator.hpp)
 
 I recently learned this method of creating a generic polynomial $f(x)$
 that passes through an arbitrary collection of points $(x_i, y_i)$.
