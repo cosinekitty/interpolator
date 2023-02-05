@@ -1,6 +1,7 @@
 #include "interpolator.hpp"
 #include <cstdio>
 #include <cmath>
+#include <string>
 
 static bool Pass(const char *caller)
 {
@@ -52,6 +53,60 @@ bool CheckPolynomial(
 }
 
 
+template <typename domain_t>
+std::string to_string(const std::vector<domain_t>& list)
+{
+    std::string text;
+    bool first = true;
+    for (domain_t c : list)
+    {
+        if (first)
+        {
+            text += "[";
+            first = false;
+        }
+        else
+            text += ", ";
+        text += std::to_string(c);
+    }
+    text += "]";
+    return text;
+}
+
+
+template <typename domain_t>
+bool CompareCoeffs(
+    const char *caller,
+    const std::vector<domain_t>& a,
+    const std::vector<domain_t>& b,
+    double tolerance)
+{
+    bool same = (a.size() == b.size());
+    if (same)
+    {
+        for (size_t i = 0; i < a.size(); ++i)
+        {
+            double diff = std::abs(a[i] - b[i]);
+            if (diff > tolerance)
+                same = false;
+        }
+    }
+
+    if (!same)
+    {
+        printf("CompareCoeffs(%s): MISMATCH FAILURE:\n", caller);
+
+        std::string aText = to_string(a);
+        printf("    a = %s\n", aText.c_str());
+
+        std::string bText = to_string(b);
+        printf("    b = %s\n", bText.c_str());
+    }
+
+    return same;
+}
+
+
 static bool PolynomialMult()
 {
     using namespace CosineKitty;
@@ -64,6 +119,11 @@ static bool PolynomialMult()
     // Verify we can evaluate the polynomial for different values of x.
     if (!CheckPolynomial("PolynomialMult", prod, 3.5, 2.5, tolerance)) return false;
     if (!CheckPolynomial("PolynomialMult", prod, 7.2, 6.2, tolerance)) return false;
+
+    // Find the product (-1 + x)(-2 + x).
+    // It should be (2 - 3x + x^2) = [2, -3, 1].
+    prod = prod * poly_t{-2, 1};
+    if (!CompareCoeffs("PolynomialMult", prod.getCoefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
 
     return Pass("PolynomialMult");
 }

@@ -12,7 +12,14 @@ namespace CosineKitty
         std::vector<domain_t> coeff;
 
     public:
+        // Coefficients are given in increasing order of power of x.
+        // That is: [C0, C1, ..., C[n-1]) represents the polynomial
+        // C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
         Polynomial(std::initializer_list<domain_t> coefficients)
+            : coeff(coefficients)
+            {}
+
+        Polynomial(const std::vector<domain_t>& coefficients)
             : coeff(coefficients)
             {}
 
@@ -26,6 +33,30 @@ namespace CosineKitty
                 xpow *= x;
             }
             return sum;
+        }
+
+        const std::vector<domain_t>& getCoefficients() const
+        {
+            return coeff;
+        }
+
+        Polynomial operator* (const Polynomial& other) const
+        {
+            // Special case: an empty polynomial [] represents zero.
+            // If either polynomial is zero, return zero.
+            if (coeff.size() == 0 || other.coeff.size() == 0)
+                return Polynomial{};
+
+            std::vector<domain_t> prod;
+            // The length of each list of coefficients is one greater
+            // than the highest power of x in the associated polynomial.
+            // The highest power of x in the product is then
+            // (L1-1) + (L2-1) = L1 + L2 - 2.
+            // Then we need L1+L2-1 coefficients for the product.
+            std::size_t order = coeff.size() + other.coeff.size() - 2;
+            prod.resize(order + 1);
+
+            return Polynomial{prod};
         }
     };
 
