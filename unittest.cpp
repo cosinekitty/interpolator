@@ -31,7 +31,7 @@ bool Check(
 template <typename domain_t, typename range_t>
 bool CheckInterpolator(
     const char *caller,
-    CosineKitty::Interpolator<domain_t, range_t>& interp,
+    const CosineKitty::Interpolator<domain_t, range_t>& interp,
     domain_t x,
     range_t yCorrect,
     double tolerance)
@@ -43,7 +43,7 @@ bool CheckInterpolator(
 template <typename domain_t>
 bool CheckPolynomial(
     const char *caller,
-    CosineKitty::Polynomial<domain_t>& poly,
+    const CosineKitty::Polynomial<domain_t>& poly,
     domain_t x,
     domain_t yCorrect,
     double tolerance)
@@ -55,15 +55,11 @@ bool CheckPolynomial(
 static bool PolynomialMult()
 {
     using namespace CosineKitty;
-
-    // Confirm that we can represent multiplication of
-    // binomials of the form (x - x_j) into a general polynomial.
-
     using poly_t = Polynomial<double>;
-
-    poly_t prod {-1, 1};        // -1 + x
-
     const double tolerance = 1.0e-14;
+
+    // Create a simple binomial.
+    poly_t prod {-1, 1};        // -1 + x
 
     // Verify we can evaluate the polynomial for different values of x.
     if (!CheckPolynomial("PolynomialMult", prod, 3.5, 2.5, tolerance)) return false;
