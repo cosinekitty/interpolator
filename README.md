@@ -94,7 +94,7 @@ A little sanity check in Python confirms we didn't make any mistakes:
 ```python
 >>> def f(x):
 ...     return (17/2)*x*x - (69/2)*x + 33
-... 
+...
 >>> f(1)
 7.0
 >>> f(2)
@@ -106,8 +106,33 @@ A little sanity check in Python confirms we didn't make any mistakes:
 # General Solution
 
 The same approach generalizes to any number of points $n$,
-resulting in a polynomial of order $(n-1)$. That's right,
-with very little work, you can write down a cubic function
-that passes through 4 points. Or a quintic function that
-passes through 6 points!
+resulting in a polynomial of order $(n-1)$.
+Following the procedure outlined above, you can write a cubic function
+that passes through 4 points, a quartic function that passes through
+5 points, and so on. The beauty of this approach is that it doesn't
+require solving systems of equations, finding the roots of polynomials,
+or anything complicated like that.
 
+Written in a general form, the best-fit polynomial curve through
+$n$ points is
+
+$$
+\begin{align*}
+f(x)
+&= y_0 \frac{(x-x_1)\cdots(x-x_{n-1})}{(x_0-x_1)\cdots(x_0-x_{n-1})} \\
+&+ y_1 \frac{(x-x_0)\cdots(x-x_{n-1})}{(x_1-x_0)\cdots(x_1-x_{n-1})} \\
+&+ \cdots \\
+&+ y_{n-1} \frac{(x-x_0)\cdots(x-x_{n-2})}{(x_{n-1}-x_0)\cdots(x_{n-1}-x_{n-2})} \\
+\end{align*}
+$$
+
+Note that the fraction after each $y_j$ has a product of $(x-x_k)$
+factors in the numerator, where $k$ ranges from $0$ to $(n-1)$, but
+omitting the case $k=j$. Likewise, the denominator has a product
+of $(x_j-x_k)$ terms, also omitting the $k=j$ case.
+
+Written more compactly, the formula is
+
+$$
+f(x) = \sum_{j=0}^{n-1} y_j \prod_{\substack{k=0 \\ k \ne j}}^{n-1} \frac{x-x_k}{x_j-x_k}
+$$
