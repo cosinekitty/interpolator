@@ -56,6 +56,12 @@ namespace CosineKitty
 
             return Polynomial{prod};
         }
+
+        Polynomial& operator *= (const Polynomial& other)
+        {
+            *this = *this * other;
+            return *this;
+        }
     };
 
 

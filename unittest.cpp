@@ -122,7 +122,7 @@ static bool PolynomialMult()
 
     // Find the product (-1 + x)(-2 + x).
     // It should be (2 - 3x + x^2) = [2, -3, 1].
-    prod = prod * poly_t{-2, 1};
+    prod *= poly_t{-2, 1};
     if (!CompareCoeffs("PolynomialMult", prod.getCoefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
 
     return Pass("PolynomialMult");
