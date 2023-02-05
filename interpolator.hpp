@@ -80,6 +80,12 @@ namespace CosineKitty
             }
             return Polynomial{sum};
         }
+
+        Polynomial& operator += (const Polynomial& other)
+        {
+            *this = *this + other;
+            return *this;
+        }
     };
 
 

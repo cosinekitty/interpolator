@@ -139,7 +139,10 @@ static bool PolynomialAdd()
     poly_t b {2, 7, 8, 1};      // 2 + 7x + 8x^2 + x^3
     poly_t c = a + b;
 
-    if (!CompareCoeffs("PolynomialMult", c.coefficients(), {5.0, 3.0, 13.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs("PolynomialAdd", c.coefficients(), {5.0, 3.0, 13.0, 1.0}, tolerance)) return false;
+
+    c += a;
+    if (!CompareCoeffs("PolynomialAdd", c.coefficients(), {8.0, -1.0, 18.0, 1.0}, tolerance)) return false;
 
     return Pass("PolynomialAdd");
 }
