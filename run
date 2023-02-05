@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ -o unittest unittest.cpp || exit 1
+./unittest || exit 1
+echo "ALL TESTS PASSED."
+exit 0
