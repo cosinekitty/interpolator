@@ -42,23 +42,30 @@ namespace CosineKitty
 
         Polynomial operator* (const Polynomial& other) const
         {
+            using namespace std;
+
             // Special case: an empty polynomial [] represents zero.
             // If either polynomial is zero, return zero.
             if (coeff.size() == 0 || other.coeff.size() == 0)
                 return Polynomial{};
 
-            std::vector<domain_t> prod;
+            vector<domain_t> prod;
             // The length of each list of coefficients is one greater
             // than the highest power of x in the associated polynomial.
             // The highest power of x in the product is then
             // (L1-1) + (L2-1) = L1 + L2 - 2.
             // Then we need L1+L2-1 coefficients for the product.
-            std::size_t order = coeff.size() + other.coeff.size() - 2;
-            prod.resize(order + 1);
+            prod.resize(coeff.size() + other.coeff.size() - 1);
+
+            // Calculate the product's coefficients.
+            for (size_t i = 0; i < coeff.size(); ++i)
+                for (size_t j = 0; j < other.coeff.size(); ++j)
+                    prod[i+j] += coeff[i] * other.coeff[j];
 
             return Polynomial{prod};
         }
     };
+
 
     template<typename domain_t, typename range_t>
     struct DataPoint
