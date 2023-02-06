@@ -407,6 +407,20 @@ static bool TruncateTrailingZeroCoeffs()
 }
 
 
+static bool PolynomialDerivative()
+{
+    using complex_t = std::complex<double>;
+    using poly_t = CosineKitty::Polynomial<complex_t, complex_t>;
+    poly_t poly {{2.0, 1.0}, {-3.0, 7.0}, {4.0, -2.0}, {-5.0, 8.0}};
+    const std::vector<complex_t> correct {{-3.0, 7.0}, {8.0, -4.0}, {-15.0, 24.0}};
+    poly_t deriv = poly.derivative();
+    return (
+        CompareCoeffs(__func__, deriv.coefficients(), correct) &&
+        Pass(__func__)
+    );
+}
+
+
 int main()
 {
     return (
@@ -417,6 +431,7 @@ int main()
         PolynomialSubtract() &&
         PolynomialPower() &&
         PolynomialUnary() &&
+        PolynomialDerivative() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&

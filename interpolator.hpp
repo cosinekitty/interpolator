@@ -223,6 +223,16 @@ namespace CosineKitty
 
             return product;
         }
+
+        Polynomial derivative() const
+        {
+            using namespace std;
+            vector<range_t> deriv;
+            const size_t n = coeff.size();
+            for (size_t i = 1; i < n; ++i)
+                deriv.push_back(static_cast<domain_t>(i) * coeff[i]);
+            return Polynomial{deriv};
+        }
     };
 
     template<typename domain_t, typename range_t>
