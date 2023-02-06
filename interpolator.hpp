@@ -80,6 +80,11 @@ namespace CosineKitty
             return sum;
         }
 
+        bool isZero() const
+        {
+            return coeff.empty();
+        }
+
         const std::vector<range_t>& coefficients() const
         {
             return coeff;
@@ -171,13 +176,16 @@ namespace CosineKitty
             return *this;
         }
 
-        Polynomial pow(int power) const
+        Polynomial pow(int exponent) const
         {
-            if (power < 0)
+            if (exponent < 0)
                 throw std::range_error("Cannot raise Polynomial to a negative power.");
 
-            Polynomial product {1};
-            for (int i = 0; i < power; ++i)
+            if (exponent == 0 && isZero())
+                throw std::range_error("Cannot raise zero Polynomial to the power zero.");
+
+            Polynomial product{1};
+            for (int i = 0; i < exponent; ++i)
                 product *= (*this);
             return product;
         }

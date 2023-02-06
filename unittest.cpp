@@ -228,11 +228,44 @@ static bool PolynomialPower()
         // Correct behavior.
     }
 
+    double_poly_t zero;     // f(x) = 0 is the default value of a polynomial.
+
+    // Verify we recognize zero.
+    if (!zero.isZero())
+    {
+        printf("%s: FAIL: did not recognize zero polynomial!\n", __func__);
+        return false;
+    }
+
+    // Should throw an exception if trying to raise 0 to the 0 power.
+    try
+    {
+        zero.pow(0);
+        printf("%s: FAIL: 0**0 should have failed!\n", __func__);
+        return false;
+    }
+    catch (const std::range_error&)
+    {
+        // Correct behavior.
+    }
+
     double_poly_t u = a.pow(0);     // should be 1
     double_poly_t p = a.pow(3);     // should be x^3 - 3*x^2 + 3*x - 1
+
+    // Make a really big polynomial, to verify the new squaring algorithm.
+    // First do it the dumb way, so we have a correct reference.
+    const int exponent = 333;
+    double_poly_t correct{1};
+    for (int i = 0; i < exponent; ++i)
+        correct *= a;
+    //printf("correct = %s\n", to_string(correct.coefficients()).c_str());
+
+    double_poly_t big = a.pow(exponent);
+
     return (
         CompareCoeffs(__func__, u.coefficients(), {1.0}, 0.0) &&
         CompareCoeffs(__func__, p.coefficients(), {-1.0, +3.0, -3.0, +1.0}, 0.0) &&
+        CompareCoeffs(__func__, big.coefficients(), correct.coefficients(), 0.0) &&
         Pass(__func__)
     );
 }
