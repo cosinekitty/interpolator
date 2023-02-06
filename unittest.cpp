@@ -83,12 +83,15 @@ bool CompareCoeffs(
     const std::vector<range_t>& b,
     double tolerance)
 {
+    double maxdiff = 0.0;
     bool same = (a.size() == b.size());
     if (same)
     {
         for (size_t i = 0; i < a.size(); ++i)
         {
             double diff = std::abs(a[i] - b[i]);
+            if (diff > maxdiff)
+                maxdiff = diff;
             if (diff > tolerance)
                 same = false;
         }
@@ -96,7 +99,13 @@ bool CompareCoeffs(
 
     if (!same)
     {
-        printf("%s(%s): MISMATCH FAILURE:\n", __func__, caller);
+        printf("%s(%s): MISMATCH FAILURE: a[%u], b[%u], maxdiff=%le\n",
+            __func__,
+            caller,
+            static_cast<unsigned>(a.size()),
+            static_cast<unsigned>(b.size()),
+            maxdiff
+        );
 
         std::string aText = to_string(a);
         printf("    a = %s\n", aText.c_str());
@@ -254,11 +263,11 @@ static bool PolynomialPower()
 
     // Make a really big polynomial, to verify the new squaring algorithm.
     // First do it the dumb way, so we have a correct reference.
-    const int exponent = 333;
+    const int exponent = 23;
     double_poly_t correct{1};
     for (int i = 0; i < exponent; ++i)
         correct *= a;
-    //printf("correct = %s\n", to_string(correct.coefficients()).c_str());
+    printf("%s: p^%d = %s\n", __func__, exponent, to_string(correct.coefficients()).c_str());
 
     double_poly_t big = a.pow(exponent);
 

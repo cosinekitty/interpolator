@@ -185,8 +185,29 @@ namespace CosineKitty
                 throw std::range_error("Cannot raise zero Polynomial to the power zero.");
 
             Polynomial product{1};
-            for (int i = 0; i < exponent; ++i)
-                product *= (*this);
+
+            if (exponent > 0)
+            {
+                Polynomial square = *this;
+
+                // Square-and-accumulate algorithm.
+                // Keep squaring this polynomial and select which
+                // squares to include in the product from the set bits
+                // inside the exponent. This approach iterates about
+                // log2(exponent) times rather than `exponent` times.
+                for(;;)
+                {
+                    if (exponent & 1)
+                        product *= square;
+
+                    exponent >>= 1;
+                    if (exponent == 0)
+                        break;
+
+                    square *= square;
+                }
+            }
+
             return product;
         }
     };
