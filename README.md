@@ -114,7 +114,7 @@ that passes through 4 points, a quartic function that passes through
 require solving systems of equations, finding the roots of polynomials,
 or anything complicated like that.
 
-Written in a general form, the best-fit polynomial curve through
+Written in a general form, the polynomial curve passing through
 $n$ points is
 
 $$
@@ -169,7 +169,7 @@ treating it syntactically like a function of $x$ in your C++ code.
 
 # Sample code
 
-Here is a [sample C++ program](demo.cpp) of a cubic best-fit through four points.
+Here is a [sample C++ program](demo.cpp) that finds the cubic function passing through four points.
 Once found, the program prints the polynomial and evaluates it at a few points.
 
 Here is [the output from the demo program](correct/demo.txt).
