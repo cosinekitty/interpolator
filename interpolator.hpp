@@ -133,7 +133,7 @@ namespace CosineKitty
             for (size_t i = 0; i < n; ++i)
             {
                 if (i < a)
-                    sum[i] += coeff[i];
+                    sum[i] = coeff[i];
                 if (i < b)
                     sum[i] += other.coeff[i];
             }
@@ -143,6 +143,30 @@ namespace CosineKitty
         Polynomial& operator += (const Polynomial& other)
         {
             *this = *this + other;
+            return *this;
+        }
+
+        Polynomial operator- (const Polynomial& other) const
+        {
+            using namespace std;
+            const size_t a = coeff.size();
+            const size_t b = other.coeff.size();
+            const size_t n = max(a, b);
+            vector<range_t> diff;
+            diff.resize(n);
+            for (size_t i = 0; i < n; ++i)
+            {
+                if (i < a)
+                    diff[i] = coeff[i];
+                if (i < b)
+                    diff[i] -= other.coeff[i];
+            }
+            return Polynomial{diff};
+        }
+
+        Polynomial& operator -= (const Polynomial& other)
+        {
+            *this = *this - other;
             return *this;
         }
     };
