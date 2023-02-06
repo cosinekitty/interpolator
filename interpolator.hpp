@@ -54,13 +54,12 @@ namespace CosineKitty
 
         range_t operator() (domain_t x) const
         {
-            range_t sum = 0;
-            domain_t xpow = 1;
-            for (range_t c : coeff)
-            {
-                sum += c * xpow;
-                xpow *= x;
-            }
+            std::size_t i = coeff.size();
+            if (i == 0)
+                return 0;
+            range_t sum = coeff[--i];
+            while (i > 0)
+                sum = x*sum + coeff[--i];
             return sum;
         }
 
