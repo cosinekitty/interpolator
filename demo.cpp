@@ -3,7 +3,7 @@
 #include "interpolator.hpp"
 
 using interp_t = CosineKitty::Interpolator<double, double>;
-using poly_t = CosineKitty::Polynomial<double>;
+using poly_t = CosineKitty::Polynomial<double, double>;
 
 void Print(const poly_t& poly)
 {

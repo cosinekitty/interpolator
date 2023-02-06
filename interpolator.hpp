@@ -31,11 +31,11 @@ SOFTWARE.
 
 namespace CosineKitty
 {
-    template<typename numeric_t>
+    template<typename domain_t, typename range_t>
     class Polynomial
     {
     private:
-        std::vector<numeric_t> coeff;
+        std::vector<range_t> coeff;
 
     public:
         // Create an empty list [] = 0.
@@ -44,19 +44,19 @@ namespace CosineKitty
         // Coefficients are given in increasing order of power of x.
         // That is: [C0, C1, ..., C[n-1]) represents the polynomial
         // C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
-        Polynomial(std::initializer_list<numeric_t> coefficients)
+        Polynomial(std::initializer_list<range_t> coefficients)
             : coeff(coefficients)
             {}
 
-        Polynomial(const std::vector<numeric_t>& coefficients)
+        Polynomial(const std::vector<range_t>& coefficients)
             : coeff(coefficients)
             {}
 
-        numeric_t operator() (numeric_t x) const
+        range_t operator() (domain_t x) const
         {
-            numeric_t sum = 0;
-            numeric_t xpow = 1;
-            for (numeric_t c : coeff)
+            range_t sum = 0;
+            domain_t xpow = 1;
+            for (range_t c : coeff)
             {
                 sum += c * xpow;
                 xpow *= x;
@@ -64,7 +64,7 @@ namespace CosineKitty
             return sum;
         }
 
-        const std::vector<numeric_t>& coefficients() const
+        const std::vector<range_t>& coefficients() const
         {
             return coeff;
         }
@@ -76,7 +76,7 @@ namespace CosineKitty
             const size_t a = coeff.size();
             const size_t b = other.coeff.size();
 
-            vector<numeric_t> prod;
+            vector<range_t> prod;
             prod.resize(a + b - 1);
 
             for (size_t i = 0; i < a; ++i)
@@ -98,7 +98,7 @@ namespace CosineKitty
             const size_t a = coeff.size();
             const size_t b = other.coeff.size();
             const size_t n = max(a, b);
-            vector<numeric_t> sum;
+            vector<range_t> sum;
             sum.resize(n);
             for (size_t i = 0; i < n; ++i)
             {
@@ -117,22 +117,14 @@ namespace CosineKitty
         }
     };
 
-
     template<typename domain_t, typename range_t>
-    Polynomial<range_t> operator * (range_t scalar, const Polynomial<domain_t>& poly)
+    Polynomial<domain_t, range_t> operator * (range_t scalar, const Polynomial<domain_t, range_t>& poly)
     {
-        // Tricky: we have a polynomial whose coefficients are of type `domain_t`.
-        // We want to multiply by a possibly different type `range_t` scalar
-        // to produce a polynomial whose coefficients are of type `range_t`.
-        // For example, domain_t might be float, range_t might be complex<float>.
-        // It is up to the caller to ensure that multiplying a range_t by a domain_t
-        // can produce a range_t, and that such multiplication makes sense.
         std::vector<range_t> product;
-        for (domain_t d : poly.coefficients())
+        for (range_t d : poly.coefficients())
             product.push_back(scalar * d);
-        return Polynomial<range_t>(product);
+        return Polynomial<domain_t, range_t>(product);
     }
-
 
     template<typename domain_t, typename range_t>
     class Interpolator
@@ -171,22 +163,22 @@ namespace CosineKitty
             return true;
         }
 
-        Polynomial<range_t> polynomial() const
+        Polynomial<domain_t, range_t> polynomial() const
         {
             using namespace std;
             const size_t n = points.size();
 
-            Polynomial<range_t> sum;
+            Polynomial<domain_t, range_t> sum;
             for (size_t j = 0; j < n; ++j)
             {
-                Polynomial<domain_t> fraction { 1 };
+                Polynomial<domain_t, range_t> fraction { 1 };
                 for (size_t k = 0; k < n; ++k)
                 {
                     if (k != j)
                     {
                         // fraction *= (x - x_k)/(x_j - x_k)
                         domain_t denom = points[j].x - points[k].x;
-                        fraction *= Polynomial<domain_t>{-points[k].x / denom, 1 / denom};
+                        fraction *= Polynomial<domain_t, range_t>{-points[k].x / denom, 1 / denom};
                     }
                 }
                 sum += points[j].y * fraction;

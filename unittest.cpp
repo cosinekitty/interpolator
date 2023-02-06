@@ -33,7 +33,7 @@ bool Check(
 template <typename domain_t, typename range_t>
 bool CheckPolynomial(
     const char *caller,
-    const CosineKitty::Polynomial<range_t>& poly,
+    const CosineKitty::Polynomial<domain_t, range_t>& poly,
     domain_t x,
     range_t yCorrect,
     double tolerance)
@@ -108,7 +108,7 @@ bool CompareCoeffs(
 static bool PolynomialMult()
 {
     using namespace CosineKitty;
-    using poly_t = Polynomial<double>;
+    using poly_t = Polynomial<double, double>;
     const double tolerance = 1.0e-14;
 
     // Create a simple binomial.
@@ -130,7 +130,7 @@ static bool PolynomialMult()
 static bool PolynomialAdd()
 {
     using namespace CosineKitty;
-    using poly_t = Polynomial<double>;
+    using poly_t = Polynomial<double, double>;
     const double tolerance = 1.0e-14;
 
     poly_t a {3, -4, 5};        // 3 - 4x + 5x^2
@@ -160,7 +160,7 @@ static bool InterpTestDouble()
         return false;
     }
 
-    Polynomial<double> poly = interp.polynomial();
+    Polynomial<double, double> poly = interp.polynomial();
     std::string ptext = to_string(poly.coefficients());
     printf("InterpTestDouble: poly = %s\n", ptext.c_str());
 
@@ -192,7 +192,7 @@ static bool InterpTestComplex()
         return false;
     }
 
-    Polynomial<complex_t> poly = interp.polynomial();
+    Polynomial<double, complex_t> poly = interp.polynomial();
     std::string ptext = to_string(poly.coefficients());
     printf("InterpTestComplex: poly = %s\n", ptext.c_str());
 
