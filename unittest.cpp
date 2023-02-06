@@ -5,6 +5,9 @@
 #include <string>
 #include <functional>
 
+using float_poly_t = CosineKitty::Polynomial<float, float>;
+
+
 static bool Pass(const char *caller)
 {
     printf("%s: PASS\n", caller);
@@ -128,8 +131,6 @@ static bool PolynomialMult()
 }
 
 
-using float_poly_t = CosineKitty::Polynomial<float, float>;
-
 static bool VerifyZeroProduct(
     const char *caller,
     const float_poly_t& a,
@@ -160,6 +161,21 @@ static bool PolynomialMultZero()
         VerifyZeroProduct("0*0", float_poly_t{}, float_poly_t{}) &&
         VerifyZeroProduct("0*(x+1)", float_poly_t{}, float_poly_t{1.0f, 1.0f}) &&
         VerifyZeroProduct("(x+1)*0", float_poly_t{1.0f, 1.0f}, float_poly_t{}) &&
+        Pass(__func__)
+    );
+}
+
+
+static bool PolynomialMultScalar()
+{
+    float_poly_t a {7.0f, -3.0f, 5.0f};
+    float_poly_t p = -2.0f * a;
+    float_poly_t q = a * -2.0f;
+    std::vector<float> c {-14.0f, 6.0f, -10.0f};
+
+    return (
+        CompareCoeffs(__func__, p.coefficients(), c, 0.0) &&
+        CompareCoeffs(__func__, q.coefficients(), c, 0.0) &&
         Pass(__func__)
     );
 }
@@ -311,6 +327,7 @@ int main()
     return (
         PolynomialMult() &&
         PolynomialMultZero() &&
+        PolynomialMultScalar() &&
         PolynomialAdd() &&
         InterpTestDouble() &&
         InterpTestComplex() &&

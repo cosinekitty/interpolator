@@ -84,6 +84,14 @@ namespace CosineKitty
             return coeff;
         }
 
+        Polynomial operator* (range_t scalar) const
+        {
+            std::vector<range_t> product;
+            for (range_t d : coeff)
+                product.push_back(scalar * d);
+            return Polynomial{product};
+        }
+
         Polynomial operator* (const Polynomial& other) const
         {
             using namespace std;
@@ -142,10 +150,7 @@ namespace CosineKitty
     template<typename domain_t, typename range_t>
     Polynomial<domain_t, range_t> operator * (range_t scalar, const Polynomial<domain_t, range_t>& poly)
     {
-        std::vector<range_t> product;
-        for (range_t d : poly.coefficients())
-            product.push_back(scalar * d);
-        return Polynomial<domain_t, range_t>(product);
+        return poly * scalar;
     }
 
     template<typename domain_t, typename range_t>
