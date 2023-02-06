@@ -233,6 +233,17 @@ namespace CosineKitty
                 deriv.push_back(static_cast<domain_t>(i) * coeff[i]);
             return Polynomial{deriv};
         }
+
+        Polynomial integral(range_t arbitraryConstant = 0) const
+        {
+            using namespace std;
+            vector<range_t> poly;
+            poly.push_back(arbitraryConstant);
+            const size_t n = coeff.size();
+            for (size_t i = 0; i < n; ++i)
+                poly.push_back(coeff[i] / static_cast<domain_t>(i+1));
+            return poly;
+        }
     };
 
     template<typename domain_t, typename range_t>

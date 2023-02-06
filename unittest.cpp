@@ -421,6 +421,21 @@ static bool PolynomialDerivative()
 }
 
 
+static bool PolynomialIntegral()
+{
+    using complex_t = std::complex<double>;
+    using poly_t = CosineKitty::Polynomial<complex_t, complex_t>;
+    poly_t poly {{2.0, 1.0}, {-3.0, 7.0}, {6.0, -3.0}, {-5.0, 8.0}};
+    const complex_t arbitraryConstant{6.0, 5.0};
+    const std::vector<complex_t> correct {arbitraryConstant, {2.0, 1.0}, {-1.5, 3.5}, {2.0, -1.0}, {-1.25, 2.0}};
+    poly_t integral = poly.integral(arbitraryConstant);
+    return (
+        CompareCoeffs(__func__, integral.coefficients(), correct) &&
+        Pass(__func__)
+    );
+}
+
+
 int main()
 {
     return (
@@ -432,6 +447,7 @@ int main()
         PolynomialPower() &&
         PolynomialUnary() &&
         PolynomialDerivative() &&
+        PolynomialIntegral() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&
