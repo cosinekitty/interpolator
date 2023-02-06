@@ -40,7 +40,7 @@ bool CheckPolynomial(
     const CosineKitty::Polynomial<domain_t, range_t>& poly,
     domain_t x,
     range_t yCorrect,
-    double tolerance)
+    double tolerance = 0.0)
 {
     return Check<domain_t, range_t>(caller, x, yCorrect, poly(x), tolerance);
 }
@@ -81,7 +81,7 @@ bool CompareCoeffs(
     const char *caller,
     const std::vector<range_t>& a,
     const std::vector<range_t>& b,
-    double tolerance)
+    double tolerance = 0.0)
 {
     double maxdiff = 0.0;
     bool same = (a.size() == b.size());
@@ -120,20 +120,17 @@ bool CompareCoeffs(
 
 static bool PolynomialMult()
 {
-    using namespace CosineKitty;
-    const double tolerance = 1.0e-14;
-
     // Create a simple binomial.
     double_poly_t prod {-1, 1};        // -1 + x
 
     // Verify we can evaluate the polynomial for different values of x.
-    if (!CheckPolynomial(__func__, prod, 3.5, 2.5, tolerance)) return false;
-    if (!CheckPolynomial(__func__, prod, 7.2, 6.2, tolerance)) return false;
+    if (!CheckPolynomial(__func__, prod, 3.5, 2.5)) return false;
+    if (!CheckPolynomial(__func__, prod, 7.2, 6.2)) return false;
 
     // Find the product (-1 + x)(-2 + x).
     // It should be (2 - 3x + x^2) = [2, -3, 1].
     prod *= double_poly_t{-2, 1};
-    if (!CompareCoeffs(__func__, prod.coefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs(__func__, prod.coefficients(), {2.0, -3.0, 1.0})) return false;
 
     return Pass(__func__);
 }
@@ -182,8 +179,8 @@ static bool PolynomialMultScalar()
     std::vector<float> c {-14.0f, 6.0f, -10.0f};
 
     return (
-        CompareCoeffs(__func__, p.coefficients(), c, 0.0) &&
-        CompareCoeffs(__func__, q.coefficients(), c, 0.0) &&
+        CompareCoeffs(__func__, p.coefficients(), c) &&
+        CompareCoeffs(__func__, q.coefficients(), c) &&
         Pass(__func__)
     );
 }
@@ -198,8 +195,8 @@ static bool PolynomialAdd()
     d += a;
 
     return (
-        CompareCoeffs(__func__, c.coefficients(), {5.0, 3.0, 13.0, 1.0}, 0.0) &&
-        CompareCoeffs(__func__, d.coefficients(), {8.0, -1.0, 18.0, 1.0}, 0.0) &&
+        CompareCoeffs(__func__, c.coefficients(), {5.0,  3.0, 13.0, 1.0}) &&
+        CompareCoeffs(__func__, d.coefficients(), {8.0, -1.0, 18.0, 1.0}) &&
         Pass(__func__)
     );
 }
@@ -214,8 +211,8 @@ static bool PolynomialSubtract()
     d -= a;
 
     return (
-        CompareCoeffs(__func__, c.coefficients(), {1.0, -11.0, -3.0, -1.0}, 0.0) &&
-        CompareCoeffs(__func__, d.coefficients(), {-2.0, -7.0, -8.0, -1.0}, 0.0) &&
+        CompareCoeffs(__func__, c.coefficients(), {1.0, -11.0, -3.0, -1.0}) &&
+        CompareCoeffs(__func__, d.coefficients(), {-2.0, -7.0, -8.0, -1.0}) &&
         Pass(__func__)
     );
 }
@@ -272,9 +269,9 @@ static bool PolynomialPower()
     double_poly_t big = a.pow(exponent);
 
     return (
-        CompareCoeffs(__func__, u.coefficients(), {1.0}, 0.0) &&
-        CompareCoeffs(__func__, p.coefficients(), {-1.0, +3.0, -3.0, +1.0}, 0.0) &&
-        CompareCoeffs(__func__, big.coefficients(), correct.coefficients(), 0.0) &&
+        CompareCoeffs(__func__, u.coefficients(), {1.0}) &&
+        CompareCoeffs(__func__, p.coefficients(), {-1.0, +3.0, -3.0, +1.0}) &&
+        CompareCoeffs(__func__, big.coefficients(), correct.coefficients()) &&
         Pass(__func__)
     );
 }
@@ -289,8 +286,8 @@ static bool PolynomialUnary()
     double_poly_t pos = +a;
     double_poly_t neg = -a;
     return (
-        CompareCoeffs(__func__, pos.coefficients(), posCoeff, 0.0) &&
-        CompareCoeffs(__func__, neg.coefficients(), negCoeff, 0.0) &&
+        CompareCoeffs(__func__, pos.coefficients(), posCoeff) &&
+        CompareCoeffs(__func__, neg.coefficients(), negCoeff) &&
         Pass(__func__)
     );
 }
@@ -314,13 +311,10 @@ static bool InterpTestDouble()
     std::string ptext = to_string(poly.coefficients());
     printf("%s: poly = %s\n", __func__, ptext.c_str());
 
-    // Verify that the supplied points evaluate exactly (within tolerance).
-    const double tolerance = 1.0e-14;
-
     return (
-        CheckPolynomial(__func__, poly, -5.0, 7.0, tolerance) &&
-        CheckPolynomial(__func__, poly,  0.0, 4.0, tolerance) &&
-        CheckPolynomial(__func__, poly, +3.0, 9.0, tolerance) &&
+        CheckPolynomial(__func__, poly, -5.0, 7.0) &&
+        CheckPolynomial(__func__, poly,  0.0, 4.0) &&
+        CheckPolynomial(__func__, poly, +3.0, 9.0) &&
         Pass(__func__)
     );
 }
@@ -346,13 +340,10 @@ static bool InterpTestComplex()
     std::string ptext = to_string(poly.coefficients());
     printf("%s: poly = %s\n", __func__, ptext.c_str());
 
-    // Verify that the supplied points evaluate exactly (within tolerance).
-    const double tolerance = 1.0e-14;
-
     return (
-        CheckPolynomial(__func__, poly, -5.0, complex_t{7.0, -3.0}, tolerance) &&
-        CheckPolynomial(__func__, poly,  0.0, complex_t{4.0, +2.5}, tolerance) &&
-        CheckPolynomial(__func__, poly, +3.0, complex_t{9.0, -1.5}, tolerance) &&
+        CheckPolynomial(__func__, poly, -5.0, complex_t{7.0, -3.0}, 1.8e-15) &&
+        CheckPolynomial(__func__, poly,  0.0, complex_t{4.0, +2.5}) &&
+        CheckPolynomial(__func__, poly, +3.0, complex_t{9.0, -1.5}) &&
         Pass(__func__)
     );
 }
@@ -410,7 +401,7 @@ static bool TruncateTrailingZeroCoeffs()
     std::vector<range_t> check {3, 7};
 
     return (
-        CompareCoeffs(__func__, poly.coefficients(), check, 0.0) &&
+        CompareCoeffs(__func__, poly.coefficients(), check) &&
         Pass(__func__)
     );
 }
