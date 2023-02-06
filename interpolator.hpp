@@ -75,6 +75,13 @@ namespace CosineKitty
             const size_t a = coeff.size();
             const size_t b = other.coeff.size();
 
+            // If either polynomial is zero (empty coefficient list),
+            // the product is zero. This must be handled as a special
+            // case to avoid trying to create a coefficient list below
+            // whose length is -1.
+            if (a == 0 || b == 0)
+                return Polynomial{};
+
             vector<range_t> prod;
             prod.resize(a + b - 1);
 

@@ -128,6 +128,43 @@ static bool PolynomialMult()
 }
 
 
+using float_poly_t = CosineKitty::Polynomial<float, float>;
+
+static bool VerifyZeroProduct(
+    const char *caller,
+    const float_poly_t& a,
+    const float_poly_t& b)
+{
+    float_poly_t product = a * b;
+    size_t n = product.coefficients().size();
+    if (n != 0)
+    {
+        printf("%s(%s): FAIL: product should have 0 coefficients, but found %u\n",
+            __func__,
+            caller,
+            static_cast<unsigned>(n)
+        );
+
+        return false;
+    }
+    return true;
+}
+
+
+static bool PolynomialMultZero()
+{
+    // Verify that we can multiply with empty Polynomial objects,
+    // which confirms a bug fix where I wasn't handling this correctly.
+
+    return (
+        VerifyZeroProduct("0*0", float_poly_t{}, float_poly_t{}) &&
+        VerifyZeroProduct("0*(x+1)", float_poly_t{}, float_poly_t{1.0f, 1.0f}) &&
+        VerifyZeroProduct("(x+1)*0", float_poly_t{1.0f, 1.0f}, float_poly_t{}) &&
+        Pass(__func__)
+    );
+}
+
+
 static bool PolynomialAdd()
 {
     using namespace CosineKitty;
@@ -254,6 +291,7 @@ int main()
 {
     return (
         PolynomialMult() &&
+        PolynomialMultZero() &&
         PolynomialAdd() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
