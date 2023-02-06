@@ -9,6 +9,11 @@ In other words, $y_i=f(x_i)$ for each point in the collection.
 The idea behind the algorithm is so simple and intuitive that
 I thought it would be fun to implement and share.
 
+This code allows a caller to specify the data types
+used for $x$ (`domain_t`) and $y$ (`range_t`). For example, if you want,
+$x$ can be passed as `double` and $f(x)$ can return `std::complex<double>`.
+Or both could be `float`.
+
 # Theory
 
 ## Quadratic example problem
@@ -154,7 +159,7 @@ its `insert` method to insert as many points $(x_j, y_j)$ as you want.
 
 Then call its `polynomial` method to return an object of type `Polynomial`.
 The `Polynomial` class represents a polynomial in terms of a single independent
-variable $x$. It holds the polynomial's numeric coefficients in ascending order
+variable $x$. It holds the polynomial's numeric coefficients $K_j$ in ascending order
 of the power of $x$. For example, the polynomial
 
 $$
