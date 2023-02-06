@@ -73,11 +73,11 @@ std::string to_string(const std::vector<domain_t>& list)
 }
 
 
-template <typename domain_t>
+template <typename range_t>
 bool CompareCoeffs(
     const char *caller,
-    const std::vector<domain_t>& a,
-    const std::vector<domain_t>& b,
+    const std::vector<range_t>& a,
+    const std::vector<range_t>& b,
     double tolerance)
 {
     bool same = (a.size() == b.size());
@@ -287,6 +287,25 @@ static bool PassAsFunction()
 }
 
 
+static bool TruncateTrailingZeroCoeffs()
+{
+    // It is wasteful to retain high-order coefficients that are zero.
+    // For example, [3, 7, 0, 0] represents f(x) = 0*x^3 + 0*x^2 + 7*x + 3.
+    // This should automatically be converted to [3, 7] = 7*x + 3.
+    // Test this in a yucky case where range_t is complex.
+    using range_t = std::complex<float>;
+    using poly_t = CosineKitty::Polynomial<float, range_t>;
+
+    poly_t poly {3, 7, 0, 0};
+    std::vector<range_t> check {3, 7};
+
+    return (
+        CompareCoeffs(__func__, poly.coefficients(), check, 0.0) &&
+        Pass(__func__)
+    );
+}
+
+
 int main()
 {
     return (
@@ -296,6 +315,7 @@ int main()
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&
-        PassAsFunction()
+        PassAsFunction() &&
+        TruncateTrailingZeroCoeffs()
     ) ? 0 : 1;
 }

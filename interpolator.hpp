@@ -37,6 +37,18 @@ namespace CosineKitty
     private:
         std::vector<range_t> coeff;
 
+        void truncate()
+        {
+            // It is wasteful to retain high-order coefficients that are zero.
+            // For example, [3, 7, 0, 0] represents f(x) = 0*x^3 + 0*x^2 + 7*x + 3.
+            // This should automatically be converted to [3, 7] = 7*x + 3.
+            const range_t zero = 0;
+            std::size_t i = coeff.size();
+            while (i>0 && coeff[i-1]==zero)
+                --i;
+            coeff.resize(i);
+        }
+
     public:
         // Create an empty list [] = 0.
         Polynomial() {}
@@ -46,11 +58,15 @@ namespace CosineKitty
         // C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
         Polynomial(std::initializer_list<range_t> coefficients)
             : coeff(coefficients)
-            {}
+        {
+            truncate();
+        }
 
         Polynomial(const std::vector<range_t>& coefficients)
             : coeff(coefficients)
-            {}
+        {
+            truncate();
+        }
 
         range_t operator() (domain_t x) const
         {
