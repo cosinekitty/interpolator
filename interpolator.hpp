@@ -90,6 +90,19 @@ namespace CosineKitty
             return coeff;
         }
 
+        const Polynomial& operator+ () const
+        {
+            return *this;
+        }
+
+        Polynomial operator- () const
+        {
+            std::vector<range_t> neg;
+            for (range_t c : coeff)
+                neg.push_back(-c);
+            return Polynomial{neg};
+        }
+
         Polynomial operator* (range_t scalar) const
         {
             std::vector<range_t> product;

@@ -280,6 +280,22 @@ static bool PolynomialPower()
 }
 
 
+static bool PolynomialUnary()
+{
+    // Allow unary '+' and '-' operators on polynomials.
+    const std::vector<double> posCoeff{+3.0, -4.0, +5.0, -6.0};
+    const std::vector<double> negCoeff{-3.0, +4.0, -5.0, +6.0};
+    double_poly_t a {posCoeff};
+    double_poly_t pos = +a;
+    double_poly_t neg = -a;
+    return (
+        CompareCoeffs(__func__, pos.coefficients(), posCoeff, 0.0) &&
+        CompareCoeffs(__func__, neg.coefficients(), negCoeff, 0.0) &&
+        Pass(__func__)
+    );
+}
+
+
 static bool InterpTestDouble()
 {
     using namespace CosineKitty;
@@ -409,6 +425,7 @@ int main()
         PolynomialAdd() &&
         PolynomialSubtract() &&
         PolynomialPower() &&
+        PolynomialUnary() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&
