@@ -1,6 +1,7 @@
 #include "interpolator.hpp"
 #include <cstdio>
 #include <cmath>
+#include <complex>
 #include <string>
 
 static bool Pass(const char *caller)
@@ -29,22 +30,31 @@ bool Check(
 }
 
 
-template <typename domain_t>
+template <typename domain_t, typename range_t>
 bool CheckPolynomial(
     const char *caller,
-    const CosineKitty::Polynomial<domain_t>& poly,
+    const CosineKitty::Polynomial<range_t>& poly,
     domain_t x,
-    domain_t yCorrect,
+    range_t yCorrect,
     double tolerance)
 {
-    return Check(caller, x, yCorrect, poly(x), tolerance);
+    return Check<domain_t, range_t>(caller, x, yCorrect, poly(x), tolerance);
+}
+
+
+template <typename domain_t>
+std::string to_string(std::complex<domain_t> z)
+{
+    return "(" + std::to_string(z.real()) + "," + std::to_string(z.imag()) + ")";
 }
 
 
 template <typename domain_t>
 std::string to_string(const std::vector<domain_t>& list)
 {
-    std::string text;
+    using namespace std;
+
+    string text;
     bool first = true;
     for (domain_t c : list)
     {
@@ -55,7 +65,7 @@ std::string to_string(const std::vector<domain_t>& list)
         }
         else
             text += ", ";
-        text += std::to_string(c);
+        text += to_string(c);
     }
     text += "]";
     return text;
@@ -136,7 +146,7 @@ static bool PolynomialAdd()
 }
 
 
-static bool LinearTestDouble()
+static bool InterpTestDouble()
 {
     using namespace CosineKitty;
 
@@ -146,22 +156,54 @@ static bool LinearTestDouble()
         !interp.insert( 0.0, 4.0) ||
         !interp.insert(+3.0, 9.0))
     {
-        printf("LinearTestDouble: FAIL: did not insert all points.\n");
+        printf("InterpTestDouble: FAIL: did not insert all points.\n");
         return false;
     }
 
     Polynomial<double> poly = interp.polynomial();
     std::string ptext = to_string(poly.coefficients());
-    printf("LinearTestDouble: poly = %s\n", ptext.c_str());
+    printf("InterpTestDouble: poly = %s\n", ptext.c_str());
 
     // Verify that the supplied points evaluate exactly (within tolerance).
     const double tolerance = 1.0e-14;
 
     return (
-        CheckPolynomial("LinearTestDouble", poly, -5.0, 7.0, tolerance) &&
-        CheckPolynomial("LinearTestDouble", poly,  0.0, 4.0, tolerance) &&
-        CheckPolynomial("LinearTestDouble", poly, +3.0, 9.0, tolerance) &&
-        Pass("LinearTestDouble")
+        CheckPolynomial("InterpTestDouble", poly, -5.0, 7.0, tolerance) &&
+        CheckPolynomial("InterpTestDouble", poly,  0.0, 4.0, tolerance) &&
+        CheckPolynomial("InterpTestDouble", poly, +3.0, 9.0, tolerance) &&
+        Pass("InterpTestDouble")
+    );
+}
+
+
+static bool InterpTestComplex()
+{
+    using namespace CosineKitty;
+
+    using complex_t = std::complex<double>;
+
+    Interpolator<double, complex_t> interp;
+
+    if (!interp.insert(-5.0, complex_t{7.0, -3.0}) ||
+        !interp.insert( 0.0, complex_t{4.0, +2.5}) ||
+        !interp.insert(+3.0, complex_t{9.0, -1.5}))
+    {
+        printf("InterpTestComplex: FAIL: did not insert all points.\n");
+        return false;
+    }
+
+    Polynomial<complex_t> poly = interp.polynomial();
+    std::string ptext = to_string(poly.coefficients());
+    printf("InterpTestComplex: poly = %s\n", ptext.c_str());
+
+    // Verify that the supplied points evaluate exactly (within tolerance).
+    const double tolerance = 1.0e-14;
+
+    return (
+        CheckPolynomial("InterpTestComplex", poly, -5.0, complex_t{7.0, -3.0}, tolerance) &&
+        CheckPolynomial("InterpTestComplex", poly,  0.0, complex_t{4.0, +2.5}, tolerance) &&
+        CheckPolynomial("InterpTestComplex", poly, +3.0, complex_t{9.0, -1.5}, tolerance) &&
+        Pass("InterpTestComplex")
     );
 }
 
@@ -191,7 +233,8 @@ int main()
     return (
         PolynomialMult() &&
         PolynomialAdd() &&
-        LinearTestDouble() &&
+        InterpTestDouble() &&
+        InterpTestComplex() &&
         FailDuplicate()
     ) ? 0 : 1;
 }

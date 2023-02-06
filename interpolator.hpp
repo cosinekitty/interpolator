@@ -186,7 +186,7 @@ namespace CosineKitty
                     {
                         // fraction *= (x - x_k)/(x_j - x_k)
                         domain_t denom = points[j].x - points[k].x;
-                        fraction *= Polynomial<range_t>{-points[k].x / denom, 1 / denom};
+                        fraction *= Polynomial<domain_t>{-points[k].x / denom, 1 / denom};
                     }
                 }
                 sum += points[j].y * fraction;
