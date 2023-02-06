@@ -429,8 +429,10 @@ static bool PolynomialIntegral()
     const complex_t arbitraryConstant{6.0, 5.0};
     const std::vector<complex_t> correct {arbitraryConstant, {2.0, 1.0}, {-1.5, 3.5}, {2.0, -1.0}, {-1.25, 2.0}};
     poly_t integral = poly.integral(arbitraryConstant);
+    poly_t check = integral.derivative();   // verify we can take derivative and obtain original function
     return (
         CompareCoeffs(__func__, integral.coefficients(), correct) &&
+        CompareCoeffs(__func__, check.coefficients(), poly.coefficients()) &&
         Pass(__func__)
     );
 }
