@@ -3,6 +3,7 @@
 #include <cmath>
 #include <complex>
 #include <string>
+#include <functional>
 
 static bool Pass(const char *caller)
 {
@@ -228,6 +229,27 @@ static bool FailDuplicate()
 }
 
 
+static double TestEval(std::function<double(double)> func, double x)
+{
+    return func(x);
+}
+
+
+static bool PassAsFunction()
+{
+    // Verify that a polynomial can be passed as a C++ std::function,
+    // just like a lambda can.
+    using poly_t = CosineKitty::Polynomial<double, double>;
+
+    poly_t poly {17.0, 5.0, -3.0};      // -3x^2 + 5x + 17
+    double yCalc = TestEval(poly, 2.0);
+    double yCorrect = -3.0*(2.0*2.0) + 5.0*(2.0) + 17.0;
+    double diff = std::abs(yCalc - yCorrect);
+    printf("PassAsFunction: diff = %le\n", diff);
+    return Pass("PassAsFunction");
+}
+
+
 int main()
 {
     return (
@@ -235,6 +257,7 @@ int main()
         PolynomialAdd() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
-        FailDuplicate()
+        FailDuplicate() &&
+        PassAsFunction()
     ) ? 0 : 1;
 }
