@@ -93,7 +93,7 @@ bool CompareCoeffs(
 
     if (!same)
     {
-        printf("CompareCoeffs(%s): MISMATCH FAILURE:\n", caller);
+        printf("%s(%s): MISMATCH FAILURE:\n", __func__, caller);
 
         std::string aText = to_string(a);
         printf("    a = %s\n", aText.c_str());
@@ -116,15 +116,15 @@ static bool PolynomialMult()
     poly_t prod {-1, 1};        // -1 + x
 
     // Verify we can evaluate the polynomial for different values of x.
-    if (!CheckPolynomial("PolynomialMult", prod, 3.5, 2.5, tolerance)) return false;
-    if (!CheckPolynomial("PolynomialMult", prod, 7.2, 6.2, tolerance)) return false;
+    if (!CheckPolynomial(__func__, prod, 3.5, 2.5, tolerance)) return false;
+    if (!CheckPolynomial(__func__, prod, 7.2, 6.2, tolerance)) return false;
 
     // Find the product (-1 + x)(-2 + x).
     // It should be (2 - 3x + x^2) = [2, -3, 1].
     prod *= poly_t{-2, 1};
-    if (!CompareCoeffs("PolynomialMult", prod.coefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs(__func__, prod.coefficients(), {2.0, -3.0, 1.0}, tolerance)) return false;
 
-    return Pass("PolynomialMult");
+    return Pass(__func__);
 }
 
 
@@ -175,12 +175,12 @@ static bool PolynomialAdd()
     poly_t b {2, 7, 8, 1};      // 2 + 7x + 8x^2 + x^3
     poly_t c = a + b;
 
-    if (!CompareCoeffs("PolynomialAdd", c.coefficients(), {5.0, 3.0, 13.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs(__func__, c.coefficients(), {5.0, 3.0, 13.0, 1.0}, tolerance)) return false;
 
     c += a;
-    if (!CompareCoeffs("PolynomialAdd", c.coefficients(), {8.0, -1.0, 18.0, 1.0}, tolerance)) return false;
+    if (!CompareCoeffs(__func__, c.coefficients(), {8.0, -1.0, 18.0, 1.0}, tolerance)) return false;
 
-    return Pass("PolynomialAdd");
+    return Pass(__func__);
 }
 
 
@@ -194,22 +194,22 @@ static bool InterpTestDouble()
         !interp.insert( 0.0, 4.0) ||
         !interp.insert(+3.0, 9.0))
     {
-        printf("InterpTestDouble: FAIL: did not insert all points.\n");
+        printf("%s: FAIL: did not insert all points.\n", __func__);
         return false;
     }
 
     Polynomial<double, double> poly = interp.polynomial();
     std::string ptext = to_string(poly.coefficients());
-    printf("InterpTestDouble: poly = %s\n", ptext.c_str());
+    printf("%s: poly = %s\n", __func__, ptext.c_str());
 
     // Verify that the supplied points evaluate exactly (within tolerance).
     const double tolerance = 1.0e-14;
 
     return (
-        CheckPolynomial("InterpTestDouble", poly, -5.0, 7.0, tolerance) &&
-        CheckPolynomial("InterpTestDouble", poly,  0.0, 4.0, tolerance) &&
-        CheckPolynomial("InterpTestDouble", poly, +3.0, 9.0, tolerance) &&
-        Pass("InterpTestDouble")
+        CheckPolynomial(__func__, poly, -5.0, 7.0, tolerance) &&
+        CheckPolynomial(__func__, poly,  0.0, 4.0, tolerance) &&
+        CheckPolynomial(__func__, poly, +3.0, 9.0, tolerance) &&
+        Pass(__func__)
     );
 }
 
@@ -226,22 +226,22 @@ static bool InterpTestComplex()
         !interp.insert( 0.0, complex_t{4.0, +2.5}) ||
         !interp.insert(+3.0, complex_t{9.0, -1.5}))
     {
-        printf("InterpTestComplex: FAIL: did not insert all points.\n");
+        printf("%s: FAIL: did not insert all points.\n", __func__);
         return false;
     }
 
     Polynomial<double, complex_t> poly = interp.polynomial();
     std::string ptext = to_string(poly.coefficients());
-    printf("InterpTestComplex: poly = %s\n", ptext.c_str());
+    printf("%s: poly = %s\n", __func__, ptext.c_str());
 
     // Verify that the supplied points evaluate exactly (within tolerance).
     const double tolerance = 1.0e-14;
 
     return (
-        CheckPolynomial("InterpTestComplex", poly, -5.0, complex_t{7.0, -3.0}, tolerance) &&
-        CheckPolynomial("InterpTestComplex", poly,  0.0, complex_t{4.0, +2.5}, tolerance) &&
-        CheckPolynomial("InterpTestComplex", poly, +3.0, complex_t{9.0, -1.5}, tolerance) &&
-        Pass("InterpTestComplex")
+        CheckPolynomial(__func__, poly, -5.0, complex_t{7.0, -3.0}, tolerance) &&
+        CheckPolynomial(__func__, poly,  0.0, complex_t{4.0, +2.5}, tolerance) &&
+        CheckPolynomial(__func__, poly, +3.0, complex_t{9.0, -1.5}, tolerance) &&
+        Pass(__func__)
     );
 }
 
@@ -252,17 +252,17 @@ static bool FailDuplicate()
 
     if (!interp.insert(3.0, 4.0))
     {
-        printf("FailDuplicate: should have inserted first point.\n");
+        printf("%s: should have inserted first point.\n", __func__);
         return false;
     }
 
     if (interp.insert(3.0, 5.0))
     {
-        printf("FailDuplicate: should NOT have inserted second point.\n");
+        printf("%s: should NOT have inserted second point.\n", __func__);
         return false;
     }
 
-    return Pass("FailDuplicate");
+    return Pass(__func__);
 }
 
 
@@ -282,8 +282,8 @@ static bool PassAsFunction()
     double yCalc = TestEval(poly, 2.0);
     double yCorrect = -3.0*(2.0*2.0) + 5.0*(2.0) + 17.0;
     double diff = std::abs(yCalc - yCorrect);
-    printf("PassAsFunction: diff = %le\n", diff);
-    return Pass("PassAsFunction");
+    printf("%s: diff = %le\n", __func__, diff);
+    return Pass(__func__);
 }
 
 
