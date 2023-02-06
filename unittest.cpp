@@ -212,6 +212,32 @@ static bool PolynomialSubtract()
 }
 
 
+static bool PolynomialPower()
+{
+    double_poly_t a {-1.0, +1.0};   // x - 1
+
+    // Should throw an exception if an attempt is made to raise to a negative power.
+    try
+    {
+        a.pow(-1);
+        printf("%s: FAIL: Raising polynomial to a negative power should have failed!\n", __func__);
+        return false;
+    }
+    catch (const std::range_error&)
+    {
+        // Correct behavior.
+    }
+
+    double_poly_t u = a.pow(0);     // should be 1
+    double_poly_t p = a.pow(3);     // should be x^3 - 3*x^2 + 3*x - 1
+    return (
+        CompareCoeffs(__func__, u.coefficients(), {1.0}, 0.0) &&
+        CompareCoeffs(__func__, p.coefficients(), {-1.0, +3.0, -3.0, +1.0}, 0.0) &&
+        Pass(__func__)
+    );
+}
+
+
 static bool InterpTestDouble()
 {
     using namespace CosineKitty;
@@ -340,6 +366,7 @@ int main()
         PolynomialMultScalar() &&
         PolynomialAdd() &&
         PolynomialSubtract() &&
+        PolynomialPower() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&

@@ -28,6 +28,7 @@ SOFTWARE.
 #define __COSINEKITTY_INTERPOLATOR_HPP
 
 #include <vector>
+#include <stdexcept>
 
 namespace CosineKitty
 {
@@ -168,6 +169,17 @@ namespace CosineKitty
         {
             *this = *this - other;
             return *this;
+        }
+
+        Polynomial pow(int power) const
+        {
+            if (power < 0)
+                throw std::range_error("Cannot raise Polynomial to a negative power.");
+
+            Polynomial product {1};
+            for (int i = 0; i < power; ++i)
+                product *= (*this);
+            return product;
         }
     };
 
