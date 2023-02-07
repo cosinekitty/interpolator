@@ -32,6 +32,19 @@ SOFTWARE.
 
 namespace CosineKitty
 {
+    /// @brief Represents a polynomial `y = f(x)` in terms of an indepdendent variable `x`.
+    /// @tparam domain_t
+    /// The numeric type of the independent variable `x`.
+    /// It may be a real-like type such as `float` or `double`,
+    /// a complex-like type such as `std::complex<double>`, or even
+    /// a custom type that has analytic properties.
+    /// Not allowed to be integer-like.
+    /// @tparam range_t
+    /// The numeric type of the polynomial `y = f(x)`.
+    /// It may be a real-like type such as `float` or `double`,
+    /// a complex-like type such as `std::complex<double>`, or even
+    /// a custom type that has analytic properties.
+    /// Not allowed to be integer-like.
     template<typename domain_t, typename range_t>
     class Polynomial
     {
@@ -51,24 +64,34 @@ namespace CosineKitty
         }
 
     public:
-        // Create an empty list [] = 0.
+        /// @brief Creates a polynomial that represents the function f(x) = 0.
         Polynomial() {}
 
-        // Coefficients are given in increasing order of power of x.
-        // That is: [C0, C1, ..., C[n-1]) represents the polynomial
-        // C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
+        /// @brief Create a polynomial with specified coefficients.
+        /// @param coefficients
+        /// Coefficients are given in increasing order of power of x.
+        /// That is: [C0, C1, ..., C[n-1]) represents the polynomial
+        /// C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
         Polynomial(std::initializer_list<range_t> coefficients)
             : coeff(coefficients)
         {
             truncate();
         }
 
+        /// @brief Creates a polynomial with specified coefficients.
+        /// @param coefficients
+        /// Coefficients are given in increasing order of power of x.
+        /// That is: [C0, C1, ..., C[n-1]) represents the polynomial
+        /// C0 + C1*x + C2*x^2 + ... + C[n-1]*x^(n-1)
         Polynomial(const std::vector<range_t>& coefficients)
             : coeff(coefficients)
         {
             truncate();
         }
 
+        /// @brief Evaluates the polynomial for a given value of x.
+        /// @param x The value of the independent variable.
+        /// @return The value of the polynomial f(x), given the value x.
         range_t operator() (domain_t x) const
         {
             std::size_t i = coeff.size();
@@ -80,21 +103,29 @@ namespace CosineKitty
             return sum;
         }
 
+        /// @brief Indicates whether the polynomial is the constant function f(x) = 0.
+        /// @return `true` if this polynomial is equivalent to zero, otherwise `false`.
         bool isZero() const
         {
             return coeff.empty();
         }
 
+        /// @brief Allows read-only access to the coefficients inside this polynomial.
+        /// @return A reference to a vector of coefficients inside this polynomial.
         const std::vector<range_t>& coefficients() const
         {
             return coeff;
         }
 
+        /// @brief The unary `+` operator, which has no effect. Provided for convenience.
+        /// @return The value of this polynomial, unchanged.
         const Polynomial& operator+ () const
         {
             return *this;
         }
 
+        /// @brief The unary `-` operator, which returns the negative of this polynomial.
+        /// @return A new polynomial equal to the negative of this polynomial.
         Polynomial operator- () const
         {
             std::vector<range_t> neg;
@@ -103,6 +134,9 @@ namespace CosineKitty
             return Polynomial{neg};
         }
 
+        /// @brief Multiplies this polynomial by a scalar constant.
+        /// @param scalar The scalar value to multiply by this polynomial.
+        /// @return A new polynomial equal to this polynomial times the given scalar.
         Polynomial operator* (range_t scalar) const
         {
             std::vector<range_t> product;
@@ -111,6 +145,9 @@ namespace CosineKitty
             return Polynomial{product};
         }
 
+        /// @brief Multiplies two polynomials.
+        /// @param other Another polynomial to multiply with this one.
+        /// @return A new polynomial equal to the product of the two supplied polynomials.
         Polynomial operator* (const Polynomial& other) const
         {
             using namespace std;
@@ -135,12 +172,18 @@ namespace CosineKitty
             return Polynomial{prod};
         }
 
+        /// @brief Updates this polynomial by multiplying it with another polynomial.
+        /// @param other The other polynomial to multiply this one with.
+        /// @return A reference to this polynomial, which has been updated by multiplication.
         Polynomial& operator *= (const Polynomial& other)
         {
             *this = *this * other;
             return *this;
         }
 
+        /// @brief Adds two polynomials.
+        /// @param other Another polynomial to add this one with.
+        /// @return A new polynomial equal to the sum of the two supplied polynomials.
         Polynomial operator+ (const Polynomial& other) const
         {
             using namespace std;
@@ -159,12 +202,18 @@ namespace CosineKitty
             return Polynomial{sum};
         }
 
+        /// @brief Updates this polynomial by adding another polynomial to it.
+        /// @param other The other polynomial to add to this one.
+        /// @return A reference to this polynomial, which has been updated by addition.
         Polynomial& operator += (const Polynomial& other)
         {
             *this = *this + other;
             return *this;
         }
 
+        /// @brief Subtracts two polynomials.
+        /// @param other Another polynomial to subtract from this one.
+        /// @return A new polynomial equal to the difference of the two supplied polynomials.
         Polynomial operator- (const Polynomial& other) const
         {
             using namespace std;
@@ -183,12 +232,21 @@ namespace CosineKitty
             return Polynomial{diff};
         }
 
+        /// @brief Updates this polynomial by subtracting another polynomial from it.
+        /// @param other The other polynomial to subtract from this one.
+        /// @return A reference to this polynomial, which has been updated as a side-effect of the subtraction.
         Polynomial& operator -= (const Polynomial& other)
         {
             *this = *this - other;
             return *this;
         }
 
+        /// @brief Raises this polynomial to a non-negative integer power.
+        /// @param exponent
+        /// A non-negative integer power.
+        /// This function throws `std::range_error` if `exponent` is negative,
+        /// or if this polynomial is zero and `exponent` is also zero.
+        /// @return A new polynomial equal to this polynomial raised to the `exponent` power.
         Polynomial pow(int exponent) const
         {
             if (exponent < 0)
@@ -224,6 +282,8 @@ namespace CosineKitty
             return product;
         }
 
+        /// @brief Takes the derivative of this polynomial with respect to its independent variable.
+        /// @return A new polynomial equal to the derivative of this polynomial.
         Polynomial derivative() const
         {
             using namespace std;
@@ -234,6 +294,10 @@ namespace CosineKitty
             return Polynomial{deriv};
         }
 
+        /// @brief Takes the indefinite integral, or antiderivative, of this polynomial.
+        /// @param arbitraryConstant
+        /// The value of the arbitrary constant term to be included in the resulting integral.
+        /// @return A new polynomial equal to the integral of this polynomial.
         Polynomial integral(range_t arbitraryConstant = 0) const
         {
             using namespace std;
@@ -246,12 +310,32 @@ namespace CosineKitty
         }
     };
 
+    /// @brief Multiplies a scalar by a polynomial.
+    /// @tparam domain_t The type of the polynomial's independent variable `x`.
+    /// @tparam range_t The type of the polynomial itself: `y = f(x)`.
+    /// @param scalar The scalar to multiply with.
+    /// @param poly The polynomial to multiply with.
+    /// @return A new polynomial equal to the product of the given scalar with the given polynomial.
     template<typename domain_t, typename range_t>
     Polynomial<domain_t, range_t> operator * (range_t scalar, const Polynomial<domain_t, range_t>& poly)
     {
         return poly * scalar;
     }
 
+
+    /// @brief Derives a polynomial that passes through a given collection of points `(x, y)`.
+    /// @tparam domain_t
+    /// Given a collection of points `(x, y)`, the numeric type of the indepdendent variable `x`.
+    /// It may be a real-like type such as `float` or `double`,
+    /// a complex-like type such as `std::complex<double>`, or even
+    /// a custom type that has analytic properties.
+    /// Not allowed to be integer-like.
+    /// @tparam range_t
+    /// Given a collection of points `(x, y)`, the numeric type of the depdendent variable `y`.
+    /// It may be a real-like type such as `float` or `double`,
+    /// a complex-like type such as `std::complex<double>`, or even
+    /// a custom type that has analytic properties.
+    /// Not allowed to be integer-like.
     template<typename domain_t, typename range_t>
     class Interpolator
     {
@@ -270,11 +354,22 @@ namespace CosineKitty
         std::vector<point_t> points;
 
     public:
+        /// @brief Empties the collection of points inside this interpolator.
         void clear()
         {
             points.clear();
         }
 
+        /// @brief Inserts another point `(x, y)` to this interpolator.
+        /// @remarks
+        /// A successful call that inserts a new point will return `true`.
+        /// An interpolator requires a unique value for all `x` values supplied.
+        /// If an `x` value has already been defined by a call to `insert`,
+        /// and the same `x` value is passed again by later call(s) to `insert`,
+        /// the later call(s) will have no effect and return `false`.
+        /// @param x The value of the independent variable `x` for this point.
+        /// @param y The value of the depdendent variable `y` for this point.
+        /// @return If successful, `true`; otherwise `false`. See remarks.
         bool insert(domain_t x, range_t y)
         {
             // The x value must never appear more than once,
@@ -289,6 +384,8 @@ namespace CosineKitty
             return true;
         }
 
+        /// @brief Calculates the unique polynomial that passes through the supplied points.
+        /// @return A polynomial whose value passes through all inserted points.
         Polynomial<domain_t, range_t> polynomial() const
         {
             using namespace std;
