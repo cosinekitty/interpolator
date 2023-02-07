@@ -30,7 +30,7 @@ Suppose we have three points on the Cartesian plane:
 We want to find the formula for a quadratic polynomial that generates these values.
 When plotted, this function will result in a parabola that passes through the points.
 
-Now let's imagine that we can express $f(x)$ using the 3 required $y$ values, like this:
+To solve this problem, imagine that we can express $f(x)$ using the 3 required $y$ values, like this:
 
 $$
 f(x) = 7A(x) - 2B(x) + 6C(x)
@@ -171,6 +171,11 @@ from lowest order $x^0$ to the highest order $x^3$.
 
 The `Polynomial` instance overloads the parentheses operator `()` to allow
 treating it syntactically like a function of $x$ in your C++ code.
+
+There are some handy overloaded operators in `Polynomial` for multiplying, adding,
+and subtracting polynomials with scalar constants or other polynomials.
+Also are included are calculus methods: you can take the derivative or
+the integral of a polynomial with respect to its indepdendent variable `x`.
 
 # Sample code
 
