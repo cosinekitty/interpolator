@@ -244,39 +244,44 @@ namespace CosineKitty
         /// @brief Raises this polynomial to a non-negative integer power.
         /// @param exponent
         /// A non-negative integer power.
-        /// This function throws `std::range_error` if `exponent` is negative,
-        /// or if this polynomial is zero and `exponent` is also zero.
+        /// This function throws `std::range_error` if `exponent` is negative.
+        /// Raising any polynomial, including f(x) = 0, to the integer 0 power,
+        /// results in the polynomial g(x) = 1.
+        /// Although 0**0 is undefined in mathematics, this convention allows certain
+        /// polynomial operations to be coded elegantly.
         /// @return A new polynomial equal to this polynomial raised to the `exponent` power.
         Polynomial pow(int exponent) const
         {
             if (exponent < 0)
                 throw std::range_error("Cannot raise Polynomial to a negative power.");
 
-            if (exponent == 0 && isZero())
-                throw std::range_error("Cannot raise zero Polynomial to the power zero.");
+            // The following two `if` statements are not strictly necessary.
+            // If deleted, the code would still work correctly.
+            // They are included as speed/memory optimizations.
 
+            if (exponent == 0)
+                return Polynomial{1};
+
+            if (exponent == 1)
+                return *this;
+
+            // Square-and-accumulate algorithm.
+            // Keep squaring this polynomial and select which
+            // squares to include in the product from the set bits
+            // inside the exponent. This approach iterates about
+            // log2(exponent) times rather than `exponent` times.
             Polynomial product{1};
-
-            if (exponent > 0)
+            Polynomial square = *this;
+            for(;;)
             {
-                Polynomial square = *this;
+                if (exponent & 1)
+                    product *= square;
 
-                // Square-and-accumulate algorithm.
-                // Keep squaring this polynomial and select which
-                // squares to include in the product from the set bits
-                // inside the exponent. This approach iterates about
-                // log2(exponent) times rather than `exponent` times.
-                for(;;)
-                {
-                    if (exponent & 1)
-                        product *= square;
+                exponent >>= 1;
+                if (exponent == 0)
+                    break;
 
-                    exponent >>= 1;
-                    if (exponent == 0)
-                        break;
-
-                    square *= square;
-                }
+                square *= square;
             }
 
             return product;
@@ -310,6 +315,7 @@ namespace CosineKitty
         }
     };
 
+
     /// @brief Multiplies a scalar by a polynomial.
     /// @tparam domain_t The type of the polynomial's independent variable `x`.
     /// @tparam range_t The type of the polynomial itself: `y = f(x)`.
@@ -320,6 +326,36 @@ namespace CosineKitty
     Polynomial<domain_t, range_t> operator * (range_t scalar, const Polynomial<domain_t, range_t>& poly)
     {
         return poly * scalar;
+    }
+
+
+    /// @brief Composes two polynomials `f(x)` and `g(x)` to produce a polynomial `f(g(x))`.
+    /// @remarks
+    /// This function applies one polynomial function to another to produce a new polynomial.
+    /// For example, if f(x) = 5x^2 + 2x, and g(x) = -3x + 7, then the composition is
+    /// f(g(x)) = 5(-3x + 7)^2 + 2(-3x + 7) = 45x^2 - 216x + 259.
+    /// @tparam domain_t The domain type of the second polynomial function `g`.
+    /// @tparam inner_t The range type of the second polynomial, which must be the same as the domain type of the first polynomial.
+    /// @tparam range_t The range type of the first polynomial.
+    /// @param f The outer polynomial function.
+    /// @param g The inner polynomial function.
+    /// @return A new polynomial function representing the composition `(f*g)(x) = f(g(x))`.
+    template<typename domain_t, typename inner_t, typename range_t>
+    Polynomial<domain_t, range_t> compose(
+        const Polynomial<inner_t, range_t>& f,
+        const Polynomial<domain_t, inner_t>& g)
+    {
+        const std::vector<range_t>& fcoeff = f.coefficients();
+        const int n = static_cast<int>(fcoeff.size());
+        Polynomial<domain_t, range_t> sum;
+        Polynomial<domain_t, inner_t> gpow{1};
+        for (int i = 0; i < n; ++i)
+        {
+            if (i > 0)
+                gpow *= g;
+            sum += fcoeff[i] * gpow;
+        }
+        return sum;
     }
 
 

@@ -58,15 +58,12 @@ std::string to_string(const std::vector<domain_t>& list)
 {
     using namespace std;
 
-    string text;
+    string text = "[";
     bool first = true;
     for (domain_t c : list)
     {
         if (first)
-        {
-            text += "[";
             first = false;
-        }
         else
             text += ", ";
         text += to_string(c);
@@ -243,19 +240,8 @@ static bool PolynomialPower()
         return false;
     }
 
-    // Should throw an exception if trying to raise 0 to the 0 power.
-    try
-    {
-        zero.pow(0);
-        printf("%s: FAIL: 0**0 should have failed!\n", __func__);
-        return false;
-    }
-    catch (const std::range_error&)
-    {
-        // Correct behavior.
-    }
-
     double_poly_t u = a.pow(0);     // should be 1
+    double_poly_t v = zero.pow(0);  // should also be 1 (even if controversial!)
     double_poly_t p = a.pow(3);     // should be x^3 - 3*x^2 + 3*x - 1
 
     // Make a really big polynomial, to verify the new squaring algorithm.
@@ -270,6 +256,7 @@ static bool PolynomialPower()
 
     return (
         CompareCoeffs(__func__, u.coefficients(), {1.0}) &&
+        CompareCoeffs(__func__, v.coefficients(), {1.0}) &&
         CompareCoeffs(__func__, p.coefficients(), {-1.0, +3.0, -3.0, +1.0}) &&
         CompareCoeffs(__func__, big.coefficients(), correct.coefficients()) &&
         Pass(__func__)
@@ -438,6 +425,29 @@ static bool PolynomialIntegral()
 }
 
 
+static bool PolynomialCompose()
+{
+    double_poly_t f{7.5, -1, 1};        // x^2 - x + 7.5
+    double_poly_t g{100, 3};            // 3x + 100
+    double_poly_t h = compose(f, g);
+    // h(x) = f(g(x))
+    //      = (3x + 100)^2 - (3x + 100) + 7.5
+    //      = (9x^2 + 600x + 10000) - (3x + 100) + 7.5
+    //      = 9x^2 + 597x + 9907.5
+
+    // Another example, directly from the doxygen comments in interpolator.hpp.
+    double_poly_t a{0, 2, 5};
+    double_poly_t b{7, -3};
+    double_poly_t c = compose(a, b);
+
+    return (
+        CompareCoeffs(__func__, h.coefficients(), {9907.5, 597, 9}) &&
+        CompareCoeffs(__func__, c.coefficients(), {259, -216, 45}) &&
+        Pass(__func__)
+    );
+}
+
+
 int main()
 {
     return (
@@ -450,6 +460,7 @@ int main()
         PolynomialUnary() &&
         PolynomialDerivative() &&
         PolynomialIntegral() &&
+        PolynomialCompose() &&
         InterpTestDouble() &&
         InterpTestComplex() &&
         FailDuplicate() &&

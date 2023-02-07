@@ -1,10 +1,10 @@
 #!/bin/bash
 rm -f output/*.txt unittest demo
 
-g++ -o unittest unittest.cpp || exit 1
+g++ -o unittest -Wall -Werror -O3 unittest.cpp || exit 1
 ./unittest || exit 1
 
-g++ -o demo demo.cpp || exit 1
+g++ -o demo -Wall -Werror -O3 demo.cpp || exit 1
 ./demo > output/demo.txt || exit 1
 if ! diff {correct,output}/demo.txt; then
     echo "FAIL: Incorrect output from demo program."
